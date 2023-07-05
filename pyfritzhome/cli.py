@@ -34,6 +34,10 @@ def list_all(fritz, args):
         if device.present is False:
             continue
 
+        if device.has_button:
+            print(" Button:")
+            print("  battery_level=%s" % device.battery_level)
+            print("  last_pressed=%s" % device.last_pressed)
         if device.has_switch:
             print(" Switch:")
             print("  switch_state=%s" % device.switch_state)
