@@ -40,6 +40,16 @@ class FritzhomeDeviceButton(FritzhomeDeviceBase):
             self.battery_level = int(self.get_node_value_as_int(node, "battery"))
         except Exception:
             pass
+        # added last_pressed , will not work for more than one button
+        lastTS = []
+        for button in self.buttons.values():
+            try:
+                last = button.last_pressed
+            except ValueError:
+                last = datetime.fromtimestamp(0, timezone.utc)
+            lastTS.append(last)
+        self.last_pressed_short = lastTS[0]
+        self.last_pressed_long = lastTS[1]
 
     def get_button_by_ain(self, ain):
         """Return the button by AIN."""
@@ -65,9 +75,10 @@ class FritzhomeButton(object):
         self.identifier = node.attrib["id"]
         self.name = node.findtext("name")
         try:
-            self.last_pressed = self.get_node_value_as_int(node, "lastpressedtimestamp")
+            last_pressed = self.get_node_value_as_int(node, "lastpressedtimestamp")
+            self.last_pressed = datetime.fromtimestamp(last_pressed, timezone.utc)
         except ValueError:
-            pass
+            self.last_pressed = datetime.fromtimestamp(0, timezone.utc)
 
     def get_node_value(self, elem, node):
         """Get the node value."""
